@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ quiet: true });
 
 // Plain CommonJS config for sequelize-cli, which can't load TypeScript.
 // The app itself connects through src/lib/db/sequelize.ts, not this file.

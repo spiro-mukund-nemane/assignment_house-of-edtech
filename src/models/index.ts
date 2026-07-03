@@ -1,6 +1,9 @@
 import { ModelStatic, Model } from 'sequelize';
 import { sequelize } from '@/lib/db/sequelize';
 import { User } from './user';
+import { Document } from './document';
+import { Collaborator } from './collaborator';
+import { Version } from './version';
 
 // Explicit registry rather than a filesystem auto-loader: Next.js bundles this
 // module, and a dynamic require(path) can't be statically analyzed by
@@ -13,7 +16,9 @@ interface AssociableModel extends ModelStatic<Model> {
 
 const models: Record<string, AssociableModel> = {
   User,
-  // Document: DocumentModel(sequelize),
+  Document,
+  Collaborator,
+  Version,
 };
 
 Object.values(models).forEach((model) => {

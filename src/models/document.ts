@@ -7,49 +7,42 @@ import {
   type CreationOptional,
 } from 'sequelize';
 import { sequelize } from '@/lib/db/sequelize';
-import { ROLES, type Role } from '@/constants/roles';
 
-export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+export class Document extends Model<InferAttributes<Document>, InferCreationAttributes<Document>> {
   declare id: CreationOptional<string>;
-  declare name: string;
-  declare email: string;
-  declare passwordHash: string;
-  declare role: Role;
+  declare title: string;
+  declare content: Record<string, unknown>;
+  declare ownerId: string;
   declare readonly createdAt: CreationOptional<Date>;
   declare readonly updatedAt: CreationOptional<Date>;
 
   static associate(models: Record<string, ModelStatic<Model>>) {
-    User.hasMany(models.Document, { as: 'ownedDocuments', foreignKey: 'ownerId' });
-    User.hasMany(models.Collaborator, { as: 'collaborations', foreignKey: 'userId' });
+    Document.belongsTo(models.User, { as: 'owner', foreignKey: 'ownerId' });
+    Document.hasMany(models.Collaborator, { as: 'collaborators', foreignKey: 'documentId' });
+    Document.hasMany(models.Version, { as: 'versions', foreignKey: 'documentId' });
   }
 }
 
-User.init(
+Document.init(
   {
     id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    name: {
+    title: {
       type: DataTypes.STRING,
       allowNull: false,
+      defaultValue: 'Untitled Document',
     },
-    email: {
-      type: DataTypes.STRING,
+    content: {
+      type: DataTypes.JSONB,
       allowNull: false,
-      unique: true,
-      validate: { isEmail: true },
     },
-    passwordHash: {
-      type: DataTypes.STRING,
+    ownerId: {
+      type: DataTypes.UUID,
       allowNull: false,
-      field: 'password_hash',
-    },
-    role: {
-      type: DataTypes.ENUM(...Object.values(ROLES)),
-      allowNull: false,
-      defaultValue: ROLES.OWNER,
+      field: 'owner_id',
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -62,7 +55,7 @@ User.init(
   },
   {
     sequelize,
-    modelName: 'User',
-    tableName: 'users',
+    modelName: 'Document',
+    tableName: 'documents',
   },
 );

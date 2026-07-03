@@ -9,47 +9,43 @@ import {
 import { sequelize } from '@/lib/db/sequelize';
 import { ROLES, type Role } from '@/constants/roles';
 
-export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+// A row per (document, user) pair recording that user's permission level on
+// that document — including the owner, so every permission check (including
+// the document's creator) goes through this single table.
+export class Collaborator extends Model<InferAttributes<Collaborator>, InferCreationAttributes<Collaborator>> {
   declare id: CreationOptional<string>;
-  declare name: string;
-  declare email: string;
-  declare passwordHash: string;
+  declare documentId: string;
+  declare userId: string;
   declare role: Role;
   declare readonly createdAt: CreationOptional<Date>;
   declare readonly updatedAt: CreationOptional<Date>;
 
   static associate(models: Record<string, ModelStatic<Model>>) {
-    User.hasMany(models.Document, { as: 'ownedDocuments', foreignKey: 'ownerId' });
-    User.hasMany(models.Collaborator, { as: 'collaborations', foreignKey: 'userId' });
+    Collaborator.belongsTo(models.Document, { as: 'document', foreignKey: 'documentId' });
+    Collaborator.belongsTo(models.User, { as: 'user', foreignKey: 'userId' });
   }
 }
 
-User.init(
+Collaborator.init(
   {
     id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    name: {
-      type: DataTypes.STRING,
+    documentId: {
+      type: DataTypes.UUID,
       allowNull: false,
+      field: 'document_id',
     },
-    email: {
-      type: DataTypes.STRING,
+    userId: {
+      type: DataTypes.UUID,
       allowNull: false,
-      unique: true,
-      validate: { isEmail: true },
-    },
-    passwordHash: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      field: 'password_hash',
+      field: 'user_id',
     },
     role: {
       type: DataTypes.ENUM(...Object.values(ROLES)),
       allowNull: false,
-      defaultValue: ROLES.OWNER,
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -62,7 +58,7 @@ User.init(
   },
   {
     sequelize,
-    modelName: 'User',
-    tableName: 'users',
+    modelName: 'Collaborator',
+    tableName: 'collaborators',
   },
 );
