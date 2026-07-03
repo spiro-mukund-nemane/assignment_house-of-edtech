@@ -1,4 +1,4 @@
-import { User } from '@/models/user';
+import { User } from '@/models';
 import type { InferCreationAttributes } from 'sequelize';
 
 type NewUser = Pick<InferCreationAttributes<User>, 'name' | 'email' | 'passwordHash' | 'role'>;

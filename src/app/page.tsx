@@ -15,7 +15,15 @@ export default async function Home() {
           <p className="text-slate-700 dark:text-slate-300">
             Signed in as <span className="font-medium">{session.user.email}</span> ({session.user.role})
           </p>
-          <SignOutButton />
+          <div className="flex gap-4">
+            <Link
+              href="/dashboard"
+              className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900"
+            >
+              Go to dashboard
+            </Link>
+            <SignOutButton />
+          </div>
         </div>
       ) : (
         <div className="flex gap-4">

@@ -8,8 +8,12 @@ import { Version } from './version';
 // Explicit registry rather than a filesystem auto-loader: Next.js bundles this
 // module, and a dynamic require(path) can't be statically analyzed by
 // webpack/Turbopack. Each feature milestone adds its model here by hand.
-// Repositories should import model classes (e.g. User) directly for full
-// attribute typing — this registry exists for cross-model associate() wiring.
+//
+// Repositories must import model classes from this file (not from
+// './user', './document', etc. directly) — associate() below is what wires
+// up belongsTo/hasMany, and it only runs once, when this module loads.
+// Importing a model file directly skips that wiring and include: [...]
+// queries fail at runtime with "X is not associated to Y".
 interface AssociableModel extends ModelStatic<Model> {
   associate?: (models: Record<string, ModelStatic<Model>>) => void;
 }
@@ -25,5 +29,5 @@ Object.values(models).forEach((model) => {
   model.associate?.(models);
 });
 
-export { sequelize };
+export { sequelize, User, Document, Collaborator, Version };
 export default models;

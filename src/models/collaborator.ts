@@ -5,9 +5,12 @@ import {
   type InferAttributes,
   type InferCreationAttributes,
   type CreationOptional,
+  type NonAttribute,
 } from 'sequelize';
 import { sequelize } from '@/lib/db/sequelize';
 import { ROLES, type Role } from '@/constants/roles';
+import type { Document } from './document';
+import type { User } from './user';
 
 // A row per (document, user) pair recording that user's permission level on
 // that document — including the owner, so every permission check (including
@@ -19,6 +22,10 @@ export class Collaborator extends Model<InferAttributes<Collaborator>, InferCrea
   declare role: Role;
   declare readonly createdAt: CreationOptional<Date>;
   declare readonly updatedAt: CreationOptional<Date>;
+
+  // Populated only when eager-loaded via `include`.
+  declare document?: NonAttribute<Document>;
+  declare user?: NonAttribute<User>;
 
   static associate(models: Record<string, ModelStatic<Model>>) {
     Collaborator.belongsTo(models.Document, { as: 'document', foreignKey: 'documentId' });
