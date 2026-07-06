@@ -1,15 +1,14 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import { env } from '@/config/env';
+import { authConfig } from './auth.config';
 import { authService } from '@/services/auth.service';
 import { loginSchema } from '@/validators/auth.validator';
 
+// Full config for route handlers and Server Components — adds the
+// Credentials provider (and therefore bcrypt + Sequelize) on top of the
+// proxy-safe base config. Never import this file from src/proxy.ts.
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  secret: env.AUTH_SECRET,
-  session: { strategy: 'jwt' },
-  pages: {
-    signIn: '/login',
-  },
+  ...authConfig,
   providers: [
     Credentials({
       credentials: {
@@ -25,18 +24,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    jwt({ token, user }) {
-      if (user) {
-        token.id = user.id as string;
-        token.role = user.role;
-      }
-      return token;
-    },
-    session({ session, token }) {
-      session.user.id = token.id;
-      session.user.role = token.role;
-      return session;
-    },
-  },
 });

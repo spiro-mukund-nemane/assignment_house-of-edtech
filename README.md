@@ -137,7 +137,9 @@ src/
   proxy.ts                   Next.js 16's middleware entry point (renamed from middleware.ts)
 ```
 
-**Why `proxy.ts` and not `middleware.ts`?** Next.js 16 renamed the middleware file convention to `proxy` and it now runs on the **Node.js runtime by default** (previously Edge) — this is why `auth.ts` can safely import `bcryptjs` and Sequelize without any edge-bundling workaround.
+**Why `proxy.ts` and not `middleware.ts`?** Next.js 16 renamed the middleware file convention to `proxy`, and it now runs on the **Node.js runtime by default** (previously Edge).
+
+**Why is Auth.js split into `auth.config.ts` and `auth.ts`?** Even on the Node.js runtime, `proxy.ts` is compiled as its own bundle, separate from route handlers and Server Components — and `serverExternalPackages` in `next.config.ts` (which lets `sequelize`/`pg` skip bundling) only applies to that main bundle, not the proxy one. `auth.config.ts` is a provider-less base config safe for `proxy.ts` to import; `auth.ts` adds the real Credentials provider (which needs `bcryptjs` + Sequelize) on top of it for route handlers/Server Components. Importing `@/lib/auth/auth` from `proxy.ts` drags Sequelize into the proxy bundle and breaks it at runtime with `Error: Please install pg package manually` — this only ever showed up on Vercel, not in local dev, since the failure is bundler-specific.
 
 **Why are migrations/seeders plain `.js`, not `.ts`?** `sequelize-cli` cannot load TypeScript. `src/config/database.js` (CommonJS) is the CLI-facing config; the app's actual runtime connection is the separate, typed `src/lib/db/sequelize.ts`.
 
