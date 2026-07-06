@@ -1,9 +1,14 @@
 import { Sequelize } from 'sequelize';
+import pg from 'pg';
 import { env } from '@/config/env';
 
-// Next.js reloads modules on every request in dev, which would otherwise open
-// a fresh Postgres connection pool each time. Caching the instance on
-// globalThis keeps a single pool alive across those reloads.
+// Sequelize loads its Postgres driver with `require(moduleName)`, where
+// moduleName is a variable — no bundler/file-tracer (Turbopack, Next's own
+// tracer, or Vercel's packaging step) can see that as a real dependency on
+// 'pg', so it can end up excluded from the deployed function even though
+// local builds happen to include it. Importing 'pg' statically here and
+// passing it as `dialectModule` below sidesteps the dynamic require
+// entirely — Sequelize uses this object directly instead of resolving it.
 const globalForSequelize = globalThis as unknown as { sequelize?: Sequelize };
 
 // Neon (and most managed Postgres) require TLS on every connection, not just
@@ -13,6 +18,7 @@ const sslDialectOptions = { ssl: { require: true, rejectUnauthorized: false } };
 function createSequelize() {
   const shared = {
     dialect: 'postgres' as const,
+    dialectModule: pg,
     logging: env.NODE_ENV === 'development' ? console.log : false,
     // Serverless functions are short-lived, and each invocation can open its
     // own pool — a large max would exhaust Neon's connection limit under load.

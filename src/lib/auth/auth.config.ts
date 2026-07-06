@@ -16,6 +16,12 @@ export const authConfig = {
   pages: {
     signIn: '/login',
   },
+  // Auth.js only trusts the incoming request's Host header automatically on
+  // Vercel (it detects the VERCEL env var) — everywhere else, including
+  // `next start` locally, it rejects requests with UntrustedHost unless this
+  // is set explicitly. We control NEXTAUTH_URL ourselves in every
+  // environment this app runs in, so trusting the request host is safe here.
+  trustHost: true,
   providers: [],
   callbacks: {
     jwt({ token, user }) {
