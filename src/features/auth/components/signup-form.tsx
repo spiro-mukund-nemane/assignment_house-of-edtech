@@ -43,7 +43,7 @@ export function SignupForm() {
     }
 
     await signIn('credentials', { email: values.email, password: values.password, redirect: false });
-    router.push('/');
+    router.push('/dashboard');
     router.refresh();
   }
 

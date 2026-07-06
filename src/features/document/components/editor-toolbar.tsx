@@ -27,9 +27,7 @@ function ToolbarButton({
       aria-label={label}
       aria-pressed={isActive}
       className={`rounded px-2 py-1 text-sm font-medium ${
-        isActive
-          ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
-          : 'text-slate-700 hover:bg-slate-200 dark:text-slate-300 dark:hover:bg-slate-800'
+        isActive ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-200'
       }`}
     >
       {children}
@@ -39,7 +37,7 @@ function ToolbarButton({
 
 export function EditorToolbar({ editor }: { editor: Editor }) {
   return (
-    <div className="flex flex-wrap items-center gap-1 rounded-t-md border border-b-0 border-slate-200 bg-slate-50 p-2 dark:border-slate-800 dark:bg-slate-900">
+    <div className="flex flex-wrap items-center gap-1 rounded-t-md border border-b-0 border-slate-200 bg-slate-50 p-2">
       <ToolbarButton label="Bold" isActive={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()}>
         B
       </ToolbarButton>
@@ -58,7 +56,7 @@ export function EditorToolbar({ editor }: { editor: Editor }) {
         S
       </ToolbarButton>
 
-      <span className="mx-1 h-5 w-px bg-slate-300 dark:bg-slate-700" />
+      <span className="mx-1 h-5 w-px bg-slate-300" />
 
       <ToolbarButton
         label="Heading 1"
@@ -75,7 +73,7 @@ export function EditorToolbar({ editor }: { editor: Editor }) {
         H2
       </ToolbarButton>
 
-      <span className="mx-1 h-5 w-px bg-slate-300 dark:bg-slate-700" />
+      <span className="mx-1 h-5 w-px bg-slate-300" />
 
       <ToolbarButton
         label="Bullet list"
@@ -99,7 +97,7 @@ export function EditorToolbar({ editor }: { editor: Editor }) {
         “ ”
       </ToolbarButton>
 
-      <span className="mx-1 h-5 w-px bg-slate-300 dark:bg-slate-700" />
+      <span className="mx-1 h-5 w-px bg-slate-300" />
 
       <ToolbarButton label="Undo" onClick={() => editor.chain().focus().undo().run()}>
         ↶

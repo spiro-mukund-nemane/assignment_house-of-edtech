@@ -36,12 +36,13 @@ export function DocumentList({ documents }: { documents: DocumentListItem[] }) {
     }
 
     router.push(`/documents/${body.data.id}`);
+    router.refresh();
   }
 
   return (
-    <div className="flex w-full max-w-2xl flex-col gap-4">
+    <div className="flex w-full max-w-5xl flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Your documents</h1>
+        <h1 className="text-2xl font-semibold text-slate-900">Your documents</h1>
         <Button onClick={handleCreate} isLoading={isCreating}>
           New document
         </Button>
@@ -50,19 +51,22 @@ export function DocumentList({ documents }: { documents: DocumentListItem[] }) {
       {error && <p className="text-sm text-red-600">{error}</p>}
 
       {documents.length === 0 ? (
-        <p className="text-sm text-slate-600 dark:text-slate-400">You don&apos;t have any documents yet.</p>
+        <p className="text-sm text-slate-600">You don&apos;t have any documents yet.</p>
       ) : (
-        <ul className="divide-y divide-slate-200 rounded-md border border-slate-200 dark:divide-slate-800 dark:border-slate-800">
+        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {documents.map((doc) => (
             <li key={doc.id}>
               <Link
                 href={`/documents/${doc.id}`}
-                className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-900"
+                className="flex h-36 flex-col justify-between rounded-lg border border-slate-200 p-4 transition-colors hover:border-slate-300 hover:bg-slate-50"
               >
-                <span className="font-medium text-slate-900 dark:text-slate-100">{doc.title}</span>
-                <span className="text-sm text-slate-500 dark:text-slate-400">
-                  {doc.role} · {new Date(doc.updatedAt).toLocaleDateString()}
-                </span>
+                <span className="line-clamp-2 font-medium text-slate-900">{doc.title}</span>
+                <div className="flex items-center justify-between text-xs text-slate-500">
+                  <span className="rounded-full bg-slate-100 px-2 py-0.5 font-medium capitalize text-slate-600">
+                    {doc.role}
+                  </span>
+                  <span>{new Date(doc.updatedAt).toLocaleDateString()}</span>
+                </div>
               </Link>
             </li>
           ))}

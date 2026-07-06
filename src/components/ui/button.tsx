@@ -6,9 +6,8 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<NonNullable<ButtonProps['variant']>, string> = {
-  primary: 'bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white',
-  secondary:
-    'border border-slate-300 text-slate-900 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-800',
+  primary: 'bg-slate-900 text-white hover:bg-slate-800',
+  secondary: 'border border-slate-300 text-slate-900 hover:bg-slate-50',
 };
 
 export function Button({

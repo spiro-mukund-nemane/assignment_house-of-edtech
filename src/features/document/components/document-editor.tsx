@@ -82,23 +82,21 @@ export function DocumentEditor({ id, title, content, role, updatedAt }: Props) {
             isTitleFocused.current = false;
           }}
           aria-label="Document title"
-          className="w-full rounded-md border border-transparent bg-transparent px-1 text-2xl font-semibold text-slate-900 outline-none focus:border-slate-300 dark:text-slate-100 dark:focus:border-slate-700"
+          className="w-full rounded-md border border-transparent bg-transparent px-1 text-2xl font-semibold text-slate-900 outline-none focus:border-slate-300"
         />
       ) : (
-        <h1 className="px-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">{titleValue}</h1>
+        <h1 className="px-1 text-2xl font-semibold text-slate-900">{titleValue}</h1>
       )}
 
       <div>
         {isEditable && <EditorToolbar editor={editor} />}
         <EditorContent
           editor={editor}
-          className={`min-h-[300px] rounded-md border border-slate-200 p-4 dark:border-slate-800 ${
-            isEditable ? 'rounded-t-none' : ''
-          }`}
+          className={`min-h-[300px] rounded-md border border-slate-200 p-4 ${isEditable ? 'rounded-t-none' : ''}`}
         />
       </div>
 
-      <p className="text-xs text-slate-400 dark:text-slate-600">
+      <p className="text-xs text-slate-400">
         Saved locally on this device. Server sync lands in the next milestone.
       </p>
     </div>

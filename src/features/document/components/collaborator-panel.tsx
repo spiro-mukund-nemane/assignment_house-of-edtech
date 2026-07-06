@@ -79,23 +79,23 @@ export function CollaboratorPanel({
   }
 
   return (
-    <div className="flex flex-col gap-4 rounded-md border border-slate-200 p-4 dark:border-slate-800">
-      <h2 className="font-medium text-slate-900 dark:text-slate-100">Collaborators</h2>
+    <div className="flex flex-col gap-4 rounded-md border border-slate-200 p-4">
+      <h2 className="font-medium text-slate-900">Collaborators</h2>
 
       <ul className="flex flex-col gap-2">
         {collaborators.map((collaborator) => (
           <li key={collaborator.id} className="flex items-center justify-between text-sm">
-            <span className="text-slate-700 dark:text-slate-300">
+            <span className="text-slate-700">
               {collaborator.name} ({collaborator.email})
             </span>
             {collaborator.role === ROLES.OWNER ? (
-              <span className="text-slate-500 dark:text-slate-400">owner</span>
+              <span className="text-slate-500">owner</span>
             ) : (
               <div className="flex items-center gap-2">
                 <select
                   value={collaborator.role}
                   onChange={(e) => handleRoleChange(collaborator.id, e.target.value as EditableRole)}
-                  className="rounded-md border border-slate-300 px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-900"
+                  className="rounded-md border border-slate-300 px-2 py-1 text-sm"
                 >
                   <option value={ROLES.EDITOR}>editor</option>
                   <option value={ROLES.VIEWER}>viewer</option>
@@ -117,10 +117,7 @@ export function CollaboratorPanel({
         <div className="flex-1">
           <Input label="Invite by email" type="email" error={errors.email?.message} {...register('email')} />
         </div>
-        <select
-          {...register('role')}
-          className="rounded-md border border-slate-300 px-2 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
-        >
+        <select {...register('role')} className="rounded-md border border-slate-300 px-2 py-2 text-sm">
           <option value={ROLES.EDITOR}>editor</option>
           <option value={ROLES.VIEWER}>viewer</option>
         </select>

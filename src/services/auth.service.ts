@@ -1,12 +1,10 @@
-import bcrypt from 'bcryptjs';
 import { AppError } from '@/lib/errors';
+import { hashPassword, verifyPassword } from '@/lib/password';
 import { userRepository } from '@/repositories/user.repository';
 import { ROLES } from '@/constants/roles';
 import type { User } from '@/models/user';
 import type { SignupInput } from '@/validators/auth.validator';
 import type { PublicUser } from '@/types/user';
-
-const SALT_ROUNDS = 12;
 
 function toPublicUser(user: User): PublicUser {
   return { id: user.id, name: user.name, email: user.email, role: user.role };
@@ -19,12 +17,15 @@ export const authService = {
       throw new AppError(409, 'An account with this email already exists');
     }
 
-    const passwordHash = await bcrypt.hash(input.password, SALT_ROUNDS);
+    // Self-signup gets the least-privileged role that can still create and
+    // edit its own documents. Only an existing Owner can promote someone to
+    // Owner, via the user-management screen — never automatically.
+    const passwordHash = await hashPassword(input.password);
     const user = await userRepository.create({
       name: input.name,
       email: input.email,
       passwordHash,
-      role: ROLES.OWNER,
+      role: ROLES.EDITOR,
     });
 
     return toPublicUser(user);
@@ -34,7 +35,7 @@ export const authService = {
     const user = await userRepository.findByEmail(email);
     if (!user) return null;
 
-    const isValid = await bcrypt.compare(password, user.passwordHash);
+    const isValid = await verifyPassword(password, user.passwordHash);
     if (!isValid) return null;
 
     return toPublicUser(user);
