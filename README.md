@@ -221,6 +221,29 @@ There's no automated test suite yet. The working pattern used throughout this pr
 
 ---
 
+## Deploying to Vercel + Neon
+
+`src/config/env.ts`, `src/lib/db/sequelize.ts`, and `src/config/database.js` all support a single `DATABASE_URL` connection string (with TLS, which Neon requires) as an alternative to the discrete `DB_*` vars used for local development — this is what makes the app deployable to a managed Postgres provider without code changes per environment.
+
+1. **Get your Neon connection string** from the Neon dashboard (or the Vercel Storage/Marketplace tab if you connected Neon through Vercel's integration) — prefer the **pooled** connection string (hostname contains `-pooler`) for the app's runtime.
+2. **Set environment variables** in Vercel (Project → Settings → Environment Variables), for the Production environment:
+   - `DATABASE_URL` — the Neon connection string. If the integration named it something else (`POSTGRES_URL`, etc.), add `DATABASE_URL` yourself with the same value.
+   - `AUTH_SECRET` — generate a fresh one for production: `npx auth secret`. Don't reuse your local `.env` value.
+   - `NEXTAUTH_URL` — your production URL, e.g. `https://your-app.vercel.app`.
+   - `SOCKET_SERVER_URL` — optional for now; the Socket.IO server hasn't been built yet.
+3. **Run migrations and seed against Neon** — from your local machine, *before or after* the first deploy (Vercel's build step doesn't run these automatically):
+   ```bash
+   DATABASE_URL="<your-neon-connection-string>" npm run db:migrate
+   DATABASE_URL="<your-neon-connection-string>" npm run db:seed   # creates owner@example.com / password123
+   ```
+   Re-run `db:migrate` against Neon after every future migration you add locally.
+4. **Deploy** — push to the branch connected to Vercel, or `vercel --prod`. Vercel auto-detects Next.js; no custom build command is needed (`serverExternalPackages` in `next.config.ts` already handles the `sequelize`/`pg` bundling issue that would otherwise break the build).
+5. **First login**: sign in as the seeded `owner@example.com` account, or sign up for your own account (defaults to `editor`) and promote it to `owner` from the Neon SQL editor (`UPDATE users SET role = 'owner' WHERE email = '...'`) since there's no existing Owner yet to do it through the Manage Users screen.
+
+Known gap after deploying: the pending milestones below (offline sync, Socket.IO, version history, AI) aren't built yet, so the deployed app has the same feature set as local dev — local edits don't sync across devices/collaborators until the sync-queue milestone ships.
+
+---
+
 ## Roadmap
 
 ### Completed
